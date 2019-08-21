@@ -3,11 +3,11 @@ version: '3'
 services:
     web1:
         container_name: "sugar-web1"
-        image: esimonetti/sugardockerized:php7.3-apache-1.16
+        image: sugar_php73_web
         ports:
             - "8080:80"
-        extra_hosts:
-            - "docker.local:127.0.0.1"
+        extra_hosts:                                   
+            - "docker.local:127.0.0.1"                        
         environment:
             - "APACHE_RUN_USER=sugar"
             - "APACHE_RUN_GROUP=sugar"
@@ -24,7 +24,7 @@ services:
             - redis
     cron:
         container_name: "sugar-cron"
-        image: esimonetti/sugardockerized:php7.3-cron-1.16
+        image: sugar_php73_cron        
         volumes:
             - ../../data/app:/var/www/html
         depends_on:
@@ -32,13 +32,13 @@ services:
             - elasticsearch
             - redis
             - permissions
-        links:
+        links:            
             - mysql
             - elasticsearch
-            - redis
+            - redis  
     mysql:
         container_name: "sugar-mysql"
-        image: esimonetti/sugardockerized:mysql5.7-1.06
+        image: sugar_mysql
         ports:
             - "3306:3306"
         volumes:
@@ -49,7 +49,7 @@ services:
             - MYSQL_PASSWORD=sugar
     elasticsearch:
         container_name: "sugar-elasticsearch"
-        image: esimonetti/sugardockerized:elasticsearch6.2-1.07
+        image: sugar_elastic62
         volumes:
             - ../../data/elasticsearch/62:/usr/share/elasticsearch/data
         environment:
@@ -68,6 +68,19 @@ services:
             - ../../data/redis:/data
     permissions:
         container_name: "sugar-permissions"
-        image: esimonetti/sugardockerized:permissions-1.17
+        image: sugar_permissions
         volumes:
             - ../../data/app:/var/www/html
+    servicios-merx:
+        container_name: "servicios-merx"
+        # build: /home/jsanchez/Documentos/merx/docker/servicios       
+        volumes:
+        - /home/jsanchez/Documentos/merx/docker/servicios:/var/www
+        ports:
+            - "4000:4000"
+        image: "jsanchezl/servicios-merx"
+        environment:
+            - NODE_ENV=test
+        # command: ["sh", "-c", "node app.js"]
+        stdin_open: true
+        tty: true
