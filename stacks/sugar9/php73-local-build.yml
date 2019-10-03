@@ -76,3 +76,17 @@ services:
         build: ../../images/permissions
         volumes:
             - ../../data/app:/var/www/html
+    servicios-merx:
+        container_name: "servicios-merx"
+        build: /home/jsanchez/Documentos/merx/docker/servicios       
+        volumes:
+        - /home/jsanchez/Documentos/merx/docker/servicios:/var/www
+        ports:
+            - "4000:4000"
+            - "5000:5000"
+        image: "jsanchezl/servicios-merx"
+        # environment:
+        #     - NODE_ENV=test
+        # command: ["sh", "-c", "node app.js"]
+        stdin_open: true
+        tty: true
