@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+    web1-jenkins:
+        container_name: "sugar-web1-jenkins"
+        image: sugar_php73_web
+        ports:
+            - "9080:80"
+        extra_hosts:                                   
+            - "docker.local:127.0.0.1"                        
+        environment:
+            - "APACHE_RUN_USER=sugar"
+            - "APACHE_RUN_GROUP=sugar"
+        volumes:
+            - ../../data/app:/var/www/html
+        depends_on:
+            - mysql-jenkins
+            - elasticsearch-jenkins
+            - redis-jenkins
+            - permissions-jenkins
+        links:
+            - mysql-jenkins
+            - elasticsearch-jenkins
+            - redis-jenkins
+    cron-jenkins:
+        container_name: "sugar-cron-jenkins"
+        image: sugar_php73_cron        
+        volumes:
+            - ../../data/app:/var/www/html
+        depends_on:
+            - mysql-jenkins
+            - elasticsearch-jenkins
+            - redis-jenkins
+            - permissions-jenkins
+        links:            
+            - mysql-jenkins
+            - elasticsearch-jenkins
+            - redis-jenkins
+    mysql-jenkins:
+        container_name: "sugar-mysql-jenkins"
+        image: sugar_mysql
+        ports:
+            - "3406:3306"
+        volumes:
+            - ../../data/mysql/57:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=sugar
+            - MYSQL_PASSWORD=sugar
+    elasticsearch-jenkins:
+        container_name: "sugar-elasticsearch-jenkins"
+        image: sugar_elastic62
+        volumes:
+            - ../../data/elasticsearch/62:/usr/share/elasticsearch/data
+        environment:
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        ports:
+            - 9300:9200
+    redis-jenkins:
+        container_name: "sugar-redis-jenkins"
+        image: redis:latest
+        volumes:
+            - ../../data/redis:/data
+        ports:
+            - 6479:6379
+    permissions-jenkins:
+        container_name: "sugar-permissions-jenkins"
+        image: sugar_permissions
+        volumes:
+            - ../../data/app:/var/www/html
+networks:
+    hostnet:
+        external: true
+        name: sugar9_default
