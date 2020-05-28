@@ -14,7 +14,7 @@ services:
         volumes:
             - ../../data/app:/var/www/html
         networks:
-            hostnet: {}
+            sugar9_default: {}
         depends_on:
             - mysql-jenkins
             - elasticsearch-jenkins
@@ -30,7 +30,7 @@ services:
         volumes:
             - ../../data/app:/var/www/html
         networks:
-            hostnet: {}
+            sugar9_default: {}
         depends_on:
             - mysql-jenkins
             - elasticsearch-jenkins
@@ -48,7 +48,7 @@ services:
         volumes:
             - ../../data/mysql/57:/var/lib/mysql
         networks:
-            hostnet: {}
+            sugar9_default: {}
         environment:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_USER=sugar
@@ -59,7 +59,7 @@ services:
         volumes:
             - ../../data/elasticsearch/62:/usr/share/elasticsearch/data
         networks:
-            hostnet: {}
+            sugar9_default: {}
         environment:
             - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         ulimits:
@@ -77,7 +77,7 @@ services:
         volumes:
             - ../../data/redis:/data
         networks:
-            hostnet: {}
+            sugar9_default: {}
         ports:
             - 6479:6379
     permissions-jenkins:
@@ -86,8 +86,7 @@ services:
         volumes:
             - ../../data/app:/var/www/html
         networks:
-            hostnet: {}
+            sugar9_default: {}
 networks:
-    hostnet:
+    sugar9_default:
         external: true
-        name: sugar9_default
