@@ -13,6 +13,8 @@ services:
             - "APACHE_RUN_GROUP=sugar"
         volumes:
             - ../../data/app:/var/www/html
+        networks:
+            hostnet: {}
         depends_on:
             - mysql-jenkins
             - elasticsearch-jenkins
@@ -27,6 +29,8 @@ services:
         image: sugar_php73_cron        
         volumes:
             - ../../data/app:/var/www/html
+        networks:
+            hostnet: {}
         depends_on:
             - mysql-jenkins
             - elasticsearch-jenkins
@@ -43,6 +47,8 @@ services:
             - "3406:3306"
         volumes:
             - ../../data/mysql/57:/var/lib/mysql
+        networks:
+            hostnet: {}
         environment:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_USER=sugar
@@ -52,6 +58,8 @@ services:
         image: sugar_elastic62
         volumes:
             - ../../data/elasticsearch/62:/usr/share/elasticsearch/data
+        networks:
+            hostnet: {}
         environment:
             - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         ulimits:
@@ -68,6 +76,8 @@ services:
         image: redis:latest
         volumes:
             - ../../data/redis:/data
+        networks:
+            hostnet: {}
         ports:
             - 6479:6379
     permissions-jenkins:
@@ -75,6 +85,8 @@ services:
         image: sugar_permissions
         volumes:
             - ../../data/app:/var/www/html
+        networks:
+            hostnet: {}
 networks:
     hostnet:
         external: true
