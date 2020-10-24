@@ -79,6 +79,7 @@ services:
         ports:
             - "4000:4000"
             - "5000:5000"
+            - "6400:6400"
         image: "jsanchezl/servicios-merx"
         # environment:
         #     - NODE_ENV=test
