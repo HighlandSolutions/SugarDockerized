@@ -1,5 +1,5 @@
-FROM php:7.3-apache
-MAINTAINER enrico.simonetti@gmail.com
+FROM php:7.4-apache
+
 
 RUN apt-get update \
     && apt-get install -y \
@@ -55,17 +55,21 @@ RUN set -ex \
 
 RUN docker-php-ext-install mysqli \
     && docker-php-ext-install bcmath \
-    && docker-php-ext-configure gd --with-freetype-dir \
+    # && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install gd \
     && docker-php-ext-install gmp \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install imap \
     && docker-php-ext-install zip \
     && docker-php-ext-install ldap \
-    # problem for xdebug 2.6.1 with php 7.3rc (https://bugs.xdebug.org/view.php?id=1584)
-    && pecl install xdebug-2.7.0beta1 \
+    && pecl install xdebug \
     && pecl install redis \
     && docker-php-ext-enable redis
+
+RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg
+RUN cd /usr/src/php/ext/gd && make
+RUN cp /usr/src/php/ext/gd/modules/gd.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902/gd.so
+RUN docker-php-ext-install -j$(nproc) gd
 
 # disable by default, it can be enabled locally
 #COPY config/php/mods-available/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
