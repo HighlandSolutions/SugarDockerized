@@ -49,10 +49,17 @@ services:
             - MYSQL_PASSWORD=sugar
     elasticsearch:
         container_name: "sugar-elasticsearch"
-        image: sugar_elastic79
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+        container_name: "sugar-elasticsearch"
+        ports:
+            - 9200:9200
+            - 9300:9300
         volumes:
-            - ../../data/elasticsearch/79:/usr/share/elasticsearch/data
+            - es-data01:/usr/share/elasticsearch/data
         environment:
+            - node.name=sugar1
+            - cluster.name=sugarcrm79
+            - discovery.type=single-node
             - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         ulimits:
             memlock:
@@ -86,3 +93,7 @@ services:
         # command: ["sh", "-c", "node app.js"]
         stdin_open: true
         tty: true
+
+volumes:
+    es-data01:
+        driver: local
