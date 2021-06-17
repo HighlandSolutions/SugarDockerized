@@ -12,6 +12,7 @@ RUN apt-get update \
     libldap2-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
+    libxml2-dev \
     git \
     --no-install-recommends
 
@@ -64,6 +65,7 @@ RUN docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
     && docker-php-ext-install ldap \
     && pecl install xdebug \
+    && docker-php-ext-install soap \
     && pecl install redis \
     && docker-php-ext-enable redis
 
@@ -77,6 +79,7 @@ RUN docker-php-ext-install -j$(nproc) gd
 COPY config/php/mods-available/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 COPY config/php/mods-available/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY config/php/opcache-blacklist /usr/local/etc/php/opcache-blacklist
+COPY config/php/mods-available/soap.ini /usr/local/etc/php/conf.d/soap.ini
 
 RUN git clone https://github.com/tideways/php-xhprof-extension.git tideways \
     && cd tideways \
