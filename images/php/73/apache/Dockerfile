@@ -12,6 +12,7 @@ RUN apt-get update \
     libldap2-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
+    libxml2-dev \
     git \
     --no-install-recommends
 
