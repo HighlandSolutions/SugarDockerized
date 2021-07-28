@@ -67,17 +67,14 @@ RUN docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
     && docker-php-ext-install ldap \
     && docker-php-ext-install pcntl \
-    && docker-php-ext-install soap \
-    # problem for xdebug 2.6.1 with php 7.3rc (https://bugs.xdebug.org/view.php?id=1584)
-    && pecl install xdebug-2.7.0beta1 \
+    && pecl install xdebug-2.9.5 \
     && pecl install redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install soap
 
-# disable by default, it can be enabled locally
 COPY config/php/mods-available/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 COPY config/php/mods-available/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY config/php/opcache-blacklist /usr/local/etc/php/opcache-blacklist
-COPY config/php/mods-available/soap.ini /usr/local/etc/php/conf.d/soap.ini
 
 RUN git clone https://github.com/tideways/php-xhprof-extension.git tideways \
     && cd tideways \

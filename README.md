@@ -1,4 +1,4 @@
-# Sugar Dockerized [![Build Status](https://travis-ci.org/esimonetti/SugarDockerized.svg?branch=master)](https://travis-ci.org/esimonetti/SugarDockerized) ![Docker Pulls](https://img.shields.io/docker/pulls/esimonetti/sugardockerized.svg)
+# Sugar Dockerized [![Build Status](https://github.com/esimonetti/SugarDockerized/actions/workflows/sugar11.yml/badge.svg)](https://github.com/esimonetti/SugarDockerized/actions) ![Docker Pulls](https://img.shields.io/docker/pulls/esimonetti/sugardockerized.svg)
 This repository will help you deploy a Docker based **development only** full stack for Sugar, meeting all the platform requirements for a different set of platform combinations.
 
 ## Requirements
@@ -14,7 +14,8 @@ This repository will help you deploy a Docker based **development only** full st
 
 ## Stacks available
 There are few stacks available, with in itself multiple platform combinations. You can read more about the specific stacks on the links below:
-* [Sugar 9](stacks/sugar9/README.md) - This stack is also valid for 9.1, 9.2 and 9.3 for local development of Sugar Cloud only versions
+* [Sugar 11](stacks/sugar11/README.md) - This stack is valid from version 11 for local developement also of Sugar Cloud only versions
+* [Sugar 9](stacks/sugar9/README.md) - This stack is also valid for 9.x and 10.x for local development of Sugar Cloud only versions
 * [Sugar 8](stacks/sugar8/README.md)
 
 You will find additional stacks within the [stack directory of the project](stacks).
@@ -106,7 +107,7 @@ Apache web servers have enabled:
 Apache web servers have PHP with enabled:
 * Zend OPcache - Configured for Sugar with the assumption the files will be located within the correct path
 * XHProf and Tideways profilers
-* Xdebug is installed but it is not enabled by default (due to its performance impact). If there is the need to enable it, you would have to uncomment the configuration option on the PHP Dockerfile of choice, and leverage the stack configuration with local build.
+* Xdebug is installed but it is not enabled by default (due to its performance impact). For PHP 5.6 images and all cron images if there is the need to enable it, you would have to uncomment the configuration option on the PHP Dockerfile of choice, and leverage the stack configuration with local build. For other case see [`xdebug.sh`](#xdebugsh).
     * If you use an IDE such as PHPStorm, you can setup DBGp Proxy under the menus Preference -> Language & Framework -> PHP -> Debug -> DBGp Proxy. Example settings are available in the screenshot below:
 
       <img width="1026" alt="PHPStorm xdebug settings" src="https://user-images.githubusercontent.com/361254/38972661-d48661f6-4356-11e8-9245-ad598239fe94.png">
@@ -177,6 +178,49 @@ If you do need multiple instances, as long as they are not running at the same t
 
 ### Utilities
 To help with development, there are a set of tools provided within the `utilities` [directory of this repository](utilities). Some of the scripts are mentioned below.
+
+#### xdebug.sh
+```./utilities/xdebug.sh [status | start | stop]```
+```
+./utilities/xdebug.sh status
+xDebug status
+PHP 7.1.33 (cli) (built: Nov 22 2019 18:28:25) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend Technologies
+    with Zend OPcache v7.1.33, Copyright (c)1999-2018, by Zend Technologies
+```
+```
+./utilities/xdebug.sh start
+Start xDebug
+6c9a9862b60c
+PHP 7.1.33 (cli) (built: Nov 22 2019 18:28:25) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend Technologies
+    with Zend OPcache v7.1.33, Copyright (c) 1999-2018, by Zend Technologies
+    with Xdebug v2.9.2, Copyright (c) 2002-2020, by Derick Rethans
+```
+```
+./utilities/xdebug.sh stop
+Stop xDebug
+6c9a9862b60c
+PHP 7.1.33 (cli) (built: Nov 22 2019 18:28:25) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend Technologies
+    with Zend OPcache v7.1.33, Copyright (c) 1999-2018, by Zend Technologies
+```
+Due to performance impact, Xdebug is disabled by default. This script prompts you to activate Xdebug, check if Xdebug is activated, or disable it.
+If you do not want to configure DBGp Proxy when running the script, you can specify the second argument `change-ip`. In this case, the script will change the `xdebug.remote_host` option to your local IP address.
+```
+./utilities/xdebug.sh start change-ip
+Start xDebug
+New IP of remote_host: 192.168.0.105
+6c9a9862b60c
+PHP 7.1.33 (cli) (built: Nov 22 2019 18:28:25) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend Technologies
+    with Zend OPcache v7.1.33, Copyright (c) 1999-2018, by Zend Technologies
+    with Xdebug v2.9.2, Copyright (c) 2002-2020, by Derick Rethans
+```
 
 #### setownership.sh
 ```./utilities/setownership.sh```
@@ -497,6 +541,36 @@ $sugar_config['import_max_records_total_limit'] = '2000';
 $sugar_config['verify_client_ip'] = false;
 ```
 Tweak the above settings based on your specific needs.
+
+### PHPMyAdmin
+You can run PHPMyAdmin in a container to get access to the database tables.
+
+Pull the image
+
+```
+docker pull phpmyadmin/phpmyadmin
+```
+Find the network name
+
+```
+docker inspect sugar-mysql -f "{{json .NetworkSettings.Networks }}"
+```
+
+Note the network name from the result
+
+```
+{"sugar9_default":{"IPAMConfig":null,"Links":null,"Aliases":["25cea53d92b9","mysql"],"NetworkID":"a5a4d323a0a423ad81512c189f73a5b44195a72708e0d48819cb1bd3c89ff5ba","EndpointID":"ea35c217dc0a8b23c09dbb1a46ca29de710dde7fe954413e92967bfc50808d43","Gateway":"172.20.0.1","IPAddress":"172.20.0.4","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"MacAddress":"02:42:ac:14:00:04","DriverOpts":null}}
+```
+
+Run phpmyadmin and forward port 80 to 8080 on localhost.  Substitute your network name.
+
+```
+docker run --network sugar9_default --name myadmin -d -e PMA_HOST=sugar-mysql -p 8080:80 phpmyadmin/phpmyadmin 
+```
+
+Go to PhpMyAdmin
+
+http://localhost:8080
 
 ## Mac users notes
 These stacks have been built on a Mac platform, that is known to not perform well with [Docker mounted volumes](https://github.com/docker/for-mac/issues/77).
