@@ -22,6 +22,8 @@ RUN apt-get clean \
 
 RUN adduser sugar --disabled-password --disabled-login --gecos ""
 
+RUN echo "<?php \$_SERVER['SERVER_SOFTWARE'] = 'SugarDockerized';" > /usr/local/php/prepend.php
+
 RUN echo 'date.timezone = GMT' >> /usr/local/etc/php/conf.d/docker.ini \
     && echo 'error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED' >> /usr/local/etc/php/conf.d/docker.ini \
     && echo 'error_log = /var/log/apache2/error.log' >> /usr/local/etc/php/conf.d/docker.ini \
@@ -39,7 +41,8 @@ RUN echo 'date.timezone = GMT' >> /usr/local/etc/php/conf.d/docker.ini \
     && echo 'session.cookie_httponly = 1' >> /usr/local/etc/php/conf.d/docker.ini \
     && echo 'session.use_trans_sid = 0' >> /usr/local/etc/php/conf.d/docker.ini \
     && echo 'session.save_handler = redis' >> /usr/local/etc/php/conf.d/docker.ini \
-    && echo 'session.save_path = "tcp://sugar-redis:6379"' >> /usr/local/etc/php/conf.d/docker.ini
+    && echo 'session.save_path = "tcp://sugar-redis:6379"' >> /usr/local/etc/php/conf.d/docker.ini \
+    && echo 'auto_prepend_file = "/usr/local/php/prepend.php"' >> /usr/local/etc/php/conf.d/docker.ini
 
 COPY config/apache2/mods-available/deflate.conf /etc/apache2/mods-available/deflate.conf
 COPY config/apache2/sites-available/sugar.conf /etc/apache2/sites-available/sugar.conf
@@ -65,9 +68,9 @@ RUN docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
     && docker-php-ext-install ldap \
     && pecl install xdebug \
-    && docker-php-ext-install soap \
     && pecl install redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install soap
 
 # FIX for PHP 7.4 - Problems on GD with JPEG and FreeType support
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg
@@ -79,7 +82,6 @@ RUN docker-php-ext-install -j$(nproc) gd
 COPY config/php/mods-available/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 COPY config/php/mods-available/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY config/php/opcache-blacklist /usr/local/etc/php/opcache-blacklist
-COPY config/php/mods-available/soap.ini /usr/local/etc/php/conf.d/soap.ini
 
 RUN git clone https://github.com/tideways/php-xhprof-extension.git tideways \
     && cd tideways \
