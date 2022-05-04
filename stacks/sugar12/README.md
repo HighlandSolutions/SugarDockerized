@@ -1,9 +1,14 @@
-# Sugar Dockerized Sugar version 11
-This repository will help you deploy a Docker based development full stack for Sugar version 11
+# Sugar Dockerized Sugar version 12
+This repository will help you deploy a Docker based development full stack for Sugar version 12
 
 ## Stacks available
-* php74.yml - Main reference stack - Single web server
-    * PHP - 7.4
-    * MySQL - 5.7
-    * Elasticsearch - 7.9
+* php80-local.yml - Main reference stack - Single web server
+    * PHP - 8.0
+    * MySQL - 8.0
+    * Elasticsearch - 7.13
+    * Redis - latest
+* php80.yml - Main reference stack - Untested.
+    * PHP - 8.0
+    * MySQL - 8.0
+    * Elasticsearch - 7.13
     * Redis - latest
